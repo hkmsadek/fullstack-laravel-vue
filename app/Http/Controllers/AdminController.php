@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Tag;
+use App\Category;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -55,5 +56,30 @@ class AdminController extends Controller
             @unlink($filePath);
         }
         return;
+    }
+    public function addCategory(Request $request){
+        // validate request 
+        $this->validate($request, [
+            'categoryName' => 'required',
+            'iconImage' => 'required',
+        ]);
+        return Category::create([
+            'categoryName' => $request->categoryName,
+            'iconImage' => $request->iconImage,
+        ]);
+    }
+    public function getCategory(){
+        return Category::orderBy('id', 'desc')->get();
+    }
+    public function editCategory(Request $request){
+        // validate request 
+        $this->validate($request, [
+            'categoryName' => 'required',
+            'iconImage' => 'required',
+        ]);
+        return Category::where('id', $request->id)->update([
+            'categoryName' => $request->categoryName,
+            'iconImage' => $request->iconImage,
+        ]);
     }
 }

@@ -11,9 +11,13 @@ const mix = require('laravel-mix');
  |
  */
 
+// admin files... 
 mix.js('resources/js/app.js', 'public/js')
 
 mix.styles([
     'public/css/grid.min.css',
     'public/css/main.css',
 ], 'public/css/all.css');
+
+
+// 

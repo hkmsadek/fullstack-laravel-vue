@@ -3508,15 +3508,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      config: {
-        image: {
-          // Like in https://github.com/editor-js/image#config-params
-          field: 'image',
-          types: 'image/*'
-        }
-      },
+      config: {},
       initData: null,
-      data: {}
+      data: {},
+      articleHTML: ''
     };
   },
   methods: {
@@ -3569,25 +3564,101 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     onSave: function onSave(response) {
-      console.log(response);
-    },
-    save: function save() {
       var _this2 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var data;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _this2.$refs.editor.save();
+                data = response; //this.data.jsonData = JSON.stringify(data)
 
-              case 1:
+                _context2.next = 3;
+                return _this2.outputHtml(data.blocks);
+
+              case 3:
+                console.log(_this2.articleHTML);
+
+              case 4:
               case "end":
                 return _context2.stop();
             }
           }
         }, _callee2);
       }))();
+    },
+    save: function save() {
+      var _this3 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _this3.$refs.editor.save();
+
+              case 1:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }))();
+    },
+    outputHtml: function outputHtml(articleObj) {
+      var _this4 = this;
+
+      articleObj.map(function (obj) {
+        switch (obj.type) {
+          case 'paragraph':
+            _this4.articleHTML += _this4.makeParagraph(obj);
+            break;
+
+          case 'image':
+            _this4.articleHTML += _this4.makeImage(obj);
+            break;
+
+          case 'header':
+            _this4.articleHTML += _this4.makeHeader(obj);
+            break;
+
+          case 'raw':
+            _this4.articleHTML += "<div class=\"ce-block\">\n\t\t\t\t\t<div class=\"ce-block__content\">\n\t\t\t\t\t<div class=\"ce-code\">\n\t\t\t\t\t\t<code>".concat(obj.data.html, "</code>\n\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n");
+            break;
+
+          case 'code':
+            _this4.articleHTML += _this4.makeCode(obj);
+            break;
+
+          case 'list':
+            _this4.articleHTML += _this4.makeList(obj);
+            break;
+
+          case "quote":
+            _this4.articleHTML += _this4.makeQuote(obj);
+            break;
+
+          case "warning":
+            _this4.articleHTML += _this4.makeWarning(obj);
+            break;
+
+          case "checklist":
+            _this4.articleHTML += _this4.makeChecklist(obj);
+            break;
+
+          case "embed":
+            _this4.articleHTML += _this4.makeEmbed(obj);
+            break;
+
+          case 'delimeter':
+            _this4.articleHTML += _this4.makeDelimeter(obj);
+            break;
+
+          default:
+            return '';
+        }
+      });
     }
   }
 });
@@ -71522,7 +71593,8 @@ var render = function() {
                     autofocus: "",
                     "holder-id": "codex-editor",
                     "save-button-id": "save-button",
-                    "init-data": _vm.initData
+                    "init-data": _vm.initData,
+                    config: _vm.config
                   },
                   on: { save: _vm.onSave }
                 })
@@ -89903,7 +89975,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var view_design_dist_styles_iview_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! view-design/dist/styles/iview.css */ "./node_modules/view-design/dist/styles/iview.css");
 /* harmony import */ var view_design_dist_styles_iview_css__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(view_design_dist_styles_iview_css__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./common */ "./resources/js/common.js");
-/* harmony import */ var vue_editor_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue-editor-js */ "./node_modules/vue-editor-js/dist/vue-editor-js.esm.js");
+/* harmony import */ var _jsonToHtml__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./jsonToHtml */ "./resources/js/jsonToHtml.js");
+/* harmony import */ var vue_editor_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue-editor-js */ "./node_modules/vue-editor-js/dist/vue-editor-js.esm.js");
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
@@ -89913,9 +89986,11 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 
 Vue.use(view_design__WEBPACK_IMPORTED_MODULE_2___default.a);
 
-Vue.mixin(_common__WEBPACK_IMPORTED_MODULE_4__["default"]);
 
-Vue.use(vue_editor_js__WEBPACK_IMPORTED_MODULE_5__["default"]);
+Vue.mixin(_common__WEBPACK_IMPORTED_MODULE_4__["default"]);
+Vue.mixin(_jsonToHtml__WEBPACK_IMPORTED_MODULE_5__["default"]);
+
+Vue.use(vue_editor_js__WEBPACK_IMPORTED_MODULE_6__["default"]);
 Vue.component('mainapp', __webpack_require__(/*! ./components/mainapp.vue */ "./resources/js/components/mainapp.vue")["default"]);
 var app = new Vue({
   el: '#app',
@@ -90471,6 +90546,91 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_newRoutePage_vue_vue_type_template_id_018f7b2e___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
+
+/***/ }),
+
+/***/ "./resources/js/jsonToHtml.js":
+/*!************************************!*\
+  !*** ./resources/js/jsonToHtml.js ***!
+  \************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  methods: {
+    makeParagraph: function makeParagraph(obj) {
+      return "<p class=\"blog_post_text\">\n                        ".concat(obj.data.text, "    \n                    </p>");
+    },
+    makeImage: function makeImage(obj) {
+      var caption = obj.data.caption ? "<div class=\"blog_caption\">\n                                <p>".concat(obj.data.caption, "</p>\n                            </div>") : '';
+      return "<div class=\"blog_image\">\n                                <img src=\"".concat(obj.data.file.url, "\" alt=\"").concat(obj.data.caption, "\"/>\n                                ").concat(caption, "\n                        </div>");
+    },
+    makeEmbed: function makeEmbed(obj) {//         const caption = obj.data.caption ? `<div class="list_item_btm_text">
+      //        <p class="nws3_text1"> ${obj.data.caption}</p>
+      //    </div>` : ''
+      //         return `<section class="nws3_sec4">
+      //         <div class="row justify-content-center">
+      //             <div class="col-12 col-md-10 col-lg-8">
+      //                 <div class="list_item_btm">
+      //                         <div class="list_item_btm_img">
+      //                         <iframe width="730" height="415" src="${obj.data.embed}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      //                         </div>
+      //                         ${caption}
+      //                     </div>
+      //             </div>
+      //         </div>
+      //     </section>`
+    },
+    makeHeader: function makeHeader(obj) {
+      return "<h".concat(obj.data.level, " class=\"blog_post_h").concat(obj.data.level, "\">").concat(obj.data.text, "</h").concat(obj.data.level, ">");
+    },
+    makeCode: function makeCode(obj) {//     return `<section class="nws3_sec4">
+      //     <div class="row justify-content-center">
+      //         <div class="col-12 col-md-10 col-lg-8">
+      //            <div class="news_code">
+      //                 <pre>
+      //                     <code class="html">
+      //                     ${obj.data.code}
+      //                     </code>
+      //                  </pre>
+      //             </div>
+      //         </div>
+      //     </div>
+      // </section>	`
+    },
+    makeList: function makeList(obj) {
+      if (obj.data.style === 'unordered') {
+        var list = obj.data.items.map(function (item) {
+          return "<li>".concat(item, "</li>");
+        });
+        return "<ul class=\"blog_post_ul\">\n                            ".concat(list.join(''), "\n                        </ul>");
+      } else {
+        var _list = obj.data.items.map(function (item) {
+          return "<li>".concat(item, "</li>");
+        });
+
+        return "<ul class=\"blog_post_ul\">\n                            ".concat(_list.join(''), "\n                        </ul>");
+      }
+    },
+    makeQuote: function makeQuote(obj) {
+      return "<div class=\"spcl_line mar_b30\">\n                        <blockquote>\n                            <p class=\"spcl_line_p\">\n                                ".concat(obj.data.text, "\n                            </p>\n                        </blockquote>\n                        <p>- ").concat(obj.data.caption, "</p>\n                    </div>");
+    },
+    makeWarning: function makeWarning(obj) {
+      return "<section class=\"nws3_sec4\">\n            <div class=\"row justify-content-center\">\n                <div class=\"col-12 col-md-10 col-lg-8\">\n                    <div class=\"table_warning\">\n                        \n                        <h3><span><i class=\"fas fa-exclamation\"></i></span>".concat(obj.data.title, "</h3>\n                        <p>").concat(obj.data.message, "</p>\n                    </div>\n                </div>\n            </div>\n        </section>\t");
+    },
+    makeChecklist: function makeChecklist(obj) {
+      var list = obj.data.items.map(function (item) {
+        return "<div class=\"_1checkbox\">\n                <span class=\"_1checkbox_round\"></span>\n                ".concat(item.text, "</div>");
+      });
+      return "<section class=\"nws3_sec4\">\n            <div class=\"row justify-content-center\">\n                <div class=\"col-12 col-md-10 col-lg-8\">\n                    <div class=\"table_top_sec\">\n                        ".concat(list.join(''), "\n                    </div>\n                </div>\n            </div>\n        </section>\t");
+    },
+    makeDelimeter: function makeDelimeter(obj) {
+      return "<div class=\"ce-block\">\n            <div class=\"ce-block__content\">\n                <div class=\"ce-delimiter cdx-block\"></div>\n            </div>\n            </div>\n";
+    }
+  }
+});
 
 /***/ }),
 

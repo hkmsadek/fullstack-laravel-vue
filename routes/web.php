@@ -37,10 +37,18 @@ Route::prefix('app')->middleware([AdminCheck::class])->group(function(){
     Route::post('assign_roles', 'AdminController@assignRole');
 
 
+    // blog 
+
+    Route::post('create-blog', 'AdminController@createBlog');
+
+
 
 });
 
 Route::post('createBlog', 'AdminController@uploadEditorImage');
+
+Route::get('slug','AdminController@slug');
+
 
 
 

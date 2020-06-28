@@ -3,11 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Tag;
+use App\Blog;
 use App\Role;
 use App\User;
+use App\Blogtag;
 use App\Category;
+use App\Blogcategory;
 use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+
 
 class AdminController extends Controller
 {
@@ -253,7 +259,64 @@ class AdminController extends Controller
             'permission' => $request->permission
         ]);
     }
-    
+
+    public function slug(){
+        $title = 'This is a nice title changed';
+        return Blog::create([
+            'title' => $title, 
+            'post' => 'some post', 
+            'post_excerpt' => 'aead',
+            'user_id' => 1,
+            'metaDescription' => 'aead',
+        ]);
+        return $title;
+    }
+
+    public function createBlog(Request $request){
+        $categories = $request->category_id;
+        $tags = $request->tag_id;
+
+        $blogCategories = [];
+        $blogTags = [];
+        DB::beginTransaction();
+        try {
+            $blog = Blog::create([
+                'title' => $request->title, 
+                'post' => $request->post, 
+                'post_excerpt' => $request->post_excerpt,
+                'user_id' => Auth::user()->id,
+                'metaDescription' => $request->metaDescription,
+                'jsonData' => $request->jsonData,
+            ]);
+            // insert blog categories 
+            foreach($categories as $c){
+                array_push($blogCategories, ['category_id' => $c, 'blog_id' => $blog->id]);
+            }
+            Blogcategory::insert($blogCategories); 
+            // insert blog tags 
+            foreach($tags as $t){
+                array_push($blogTags, ['tag_id' => $t, 'blog_id' => $blog->id]);
+            }
+            Blogtag::insert($blogTags); 
+            DB::commit();
+            return 'done';
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return 'not done';
+        }
+
+       
+       
+       
+        
+       
+       
+
+       
+
+       
+    }
+   
 
 
 

@@ -5,8 +5,10 @@
 				
 				<!--~~~~~~~ TABLE ONE ~~~~~~~~~-->
 				<div class="_1adminOverveiw_table_recent _box_shadow _border_radious _mar_b30 _p20">
-					<p class="_title0">Role Manangement <Button @click="addModal=true"><Icon type="md-add" /> Add a new role</Button></p>
-
+					<p class="_title0">Blog <Button @click="addModal=true"><Icon type="md-add" /> Add a new role</Button></p>
+					<div class="_input_field">
+						 <Input type="text" v-model="data.title" placeholder="Title" />
+					 </div>
 					<div class="_overflow _table_div blog_editor">
 						
                              <editor
@@ -21,11 +23,26 @@
 
                            
 					</div>
-					 <div class="_input_field">
-						 <Input type="text" placeholder="title" />
+					<div class="_input_field">
+						 <Input  type="textarea" v-model="data.post_excerpt" :rows="4" placeholder="Post excerpt " />
 					 </div>
+					<div class="_input_field">
+						<Select  filterable multiple placeholder="Select category" v-model="data.category_id">
+							<Option v-for="(c, i) in category" :value="c.id" :key="i">{{ c.categoryName }}</Option>
+						</Select>
+					</div>
+					<div class="_input_field">
+						<Select  filterable multiple placeholder="Select tag" v-model="data.tag_id">
+							<Option v-for="(t, i) in tag" :value="t.id" :key="i">{{ t.tagName }}</Option>
+						</Select>
+					</div>
+					<div class="_input_field">
+						 <Input  type="textarea" v-model="data.metaDescription" :rows="4" placeholder="Meta description" />
+					 </div>
+
+					 
 					 <div class="_input_field">
-						 <Button @click="save">Save the data</Button>
+						 <Button @click="save" :loading="isCreating" :disabled="isCreating">{{isCreating ? 'Please wait...' : 'Create blog'}}</Button>
 					 </div>
 					 
 				</div>
@@ -50,9 +67,19 @@ export default {
 			},
             initData: null,
             data: {
-
+				title : '',
+				post : '',
+				post_excerpt : '',
+				metaDescription : '',
+				category_id : [], 
+				tag_id : [], 
+				jsonData: null
+				
 			}, 
-			articleHTML: ''
+			articleHTML: '', 
+			category : [], 
+			tag : [], 
+			isCreating: false,
 			
 
 		}
@@ -86,7 +113,17 @@ export default {
             var data = response
 			//this.data.jsonData = JSON.stringify(data)
 			await this.outputHtml(data.blocks)
-			console.log(this.articleHTML)
+			this.data.post = this.articleHTML 
+			this.data.jsonData = JSON.stringify(data)
+			this.isCreating = true 
+			const res = await this.callApi('post', 'app/create-blog', this.data)
+			if(res.status===200){
+				this.s('Blog has been created successfully!')
+				// redirect... 
+			}else{
+				this.swr()
+			}
+			this.isCreating = false
         },
         async save(){
             this.$refs.editor.save()
@@ -139,15 +176,21 @@ export default {
 					return '';
 				}
 			});
-
-			
-
-			
-	  	},
-		
-		
-		
+		},
 	}, 
+	async created(){
+		const [cat, tag] = await Promise.all([
+			this.callApi('get', 'app/get_category'),
+			this.callApi('get', 'app/get_tags'),
+		])
+		if(cat.status==200){
+			this.category = cat.data
+			this.tag = tag.data
+		}else{
+			this.swr()
+		}
+
+	}
 
 	
 	
@@ -177,7 +220,7 @@ export default {
 	}
 	
 	._input_field{
-		margin: 20px 0 0 160px;
+		margin: 20px 0 20px 160px;
     	width: 717px;
 	}
 </style>

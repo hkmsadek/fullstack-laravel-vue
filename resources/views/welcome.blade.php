@@ -8,22 +8,21 @@
 
         <link rel="stylesheet" href="/css/all.css">
         <script>
-           
+
             (function () {
                 window.Laravel = {
                     csrfToken: '{{ csrf_token() }}'
                 };
             })();
-          
+
         </script>
-      
+
     </head>
     <body>
          <div id="app">
              @if(Auth::check())
-                
                 <mainapp :user="{{Auth::user()}}" :permission="{{Auth::user()->role->permission}}"></mainapp>
-            @else 
+            @else
                 <mainapp :user="false"></mainapp>
             @endif
          </div>

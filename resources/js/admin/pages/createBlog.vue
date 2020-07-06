@@ -2,7 +2,7 @@
     <div>
        <div class="content">
 			<div class="container-fluid">
-				
+
 				<!--~~~~~~~ TABLE ONE ~~~~~~~~~-->
 				<div class="_1adminOverveiw_table_recent _box_shadow _border_radious _mar_b30 _p20">
 					<p class="_title0">Blog <Button @click="addModal=true"><Icon type="md-add" /> Add a new role</Button></p>
@@ -10,7 +10,7 @@
 						 <Input type="text" v-model="data.title" placeholder="Title" />
 					 </div>
 					<div class="_overflow _table_div blog_editor">
-						
+
                              <editor
                                 ref="editor"
                                 autofocus
@@ -21,7 +21,7 @@
 								:config="config"
 							/>
 
-                           
+
 					</div>
 					<div class="_input_field">
 						 <Input  type="textarea" v-model="data.post_excerpt" :rows="4" placeholder="Post excerpt " />
@@ -40,16 +40,16 @@
 						 <Input  type="textarea" v-model="data.metaDescription" :rows="4" placeholder="Meta description" />
 					 </div>
 
-					 
+
 					 <div class="_input_field">
 						 <Button @click="save" :loading="isCreating" :disabled="isCreating">{{isCreating ? 'Please wait...' : 'Create blog'}}</Button>
 					 </div>
-					 
+
 				</div>
 
 
-				
-				
+
+
 
 			</div>
 		</div>
@@ -63,7 +63,7 @@ export default {
 	data(){
 		return {
             config: {
-				
+
 			},
             initData: null,
             data: {
@@ -71,63 +71,57 @@ export default {
 				post : '',
 				post_excerpt : '',
 				metaDescription : '',
-				category_id : [], 
-				tag_id : [], 
+				category_id : [],
+				tag_id : [],
 				jsonData: null
-				
-			}, 
-			articleHTML: '', 
-			category : [], 
-			tag : [], 
+
+			},
+			articleHTML: '',
+			category : [],
+			tag : [],
 			isCreating: false,
-			
+
 
 		}
 	},
 
 	methods : {
-		
-		async add(){
-			if(this.data.roleName.trim()=='') return this.e('Role name is required')
-			const res = await this.callApi('post', 'app/create_role', this.data)
-			if(res.status===201){
-				this.tags.unshift(res.data)
-				this.s('Role has been added successfully!')
-				this.addModal = false
-				this.data.roleName = ''
-			}else{
-				if(res.status==422){
-					if(res.data.errors.roleName){
-						this.e(res.data.errors.roleName[0])
-					}
-					
-				}else{
-					this.swr()
-				}
-				
-			}
-        },
 
-	
+
+
         async onSave(response){
             var data = response
-			//this.data.jsonData = JSON.stringify(data)
 			await this.outputHtml(data.blocks)
-			this.data.post = this.articleHTML 
-			this.data.jsonData = JSON.stringify(data)
-			this.isCreating = true 
+			this.data.post = this.articleHTML
+            this.data.jsonData = JSON.stringify(data)
+            if(this.data.post.trim()=='') return this.e('Post is required')
+            if(this.data.title.trim()=='') return this.e('Title is required')
+            if(this.data.post_excerpt.trim()=='') return this.e('Post exerpt is required')
+            if(this.data.metaDescription.trim()=='') return this.e('Meta description is required')
+            if(!this.data.tag_id.length) return this.e('Tag is required')
+            if(!this.data.category_id.length) return this.e('Category is required')
+
+			this.isCreating = true
 			const res = await this.callApi('post', 'app/create-blog', this.data)
 			if(res.status===200){
 				this.s('Blog has been created successfully!')
-				// redirect... 
+                // redirect...
+                this.$router.push('/blogs')
 			}else{
-				this.swr()
+                if(res.status==422){
+                    for(let i in res.data.errors){
+                        this.e(res.data.errors[i][0])
+                    }
+                }else{
+                    this.swr()
+                }
+
 			}
 			this.isCreating = false
         },
         async save(){
             this.$refs.editor.save()
-        }, 
+        },
 		 outputHtml(articleObj){
 		   articleObj.map(obj => {
 				switch (obj.type) {
@@ -177,7 +171,7 @@ export default {
 				}
 			});
 		},
-	}, 
+	},
 	async created(){
 		const [cat, tag] = await Promise.all([
 			this.callApi('get', 'app/get_category'),
@@ -192,12 +186,12 @@ export default {
 
 	}
 
-	
-	
-	
 
 
-	
+
+
+
+
 }
 </script>
 
@@ -218,7 +212,7 @@ export default {
 	.blog_editor:hover {
 		border: 1px solid #57a3f3;
 	}
-	
+
 	._input_field{
 		margin: 20px 0 20px 160px;
     	width: 717px;

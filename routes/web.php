@@ -30,17 +30,18 @@ Route::prefix('app')->middleware([AdminCheck::class])->group(function(){
     Route::post('/edit_user', 'AdminController@editUser');
     Route::post('/admin_login', 'AdminController@adminLogin');
 
-    //  roles routes 
+    //  roles routes
     Route::post('create_role', 'AdminController@addRole');
     Route::get('get_roles', 'AdminController@getRoles');
     Route::post('edit_role', 'AdminController@editRole');
     Route::post('assign_roles', 'AdminController@assignRole');
 
 
-    // blog 
+    // blog
 
     Route::post('create-blog', 'AdminController@createBlog');
-
+    Route::get('blogsdata', 'AdminController@blogdata'); // get the blogs item
+    Route::post('delete_blog', 'AdminController@deleteBlog');
 
 
 });
@@ -49,12 +50,13 @@ Route::post('createBlog', 'AdminController@uploadEditorImage');
 
 Route::get('slug','AdminController@slug');
 
+Route::get('blogdata', 'AdminController@blogdata');
 
 
 
 Route::get('/logout', 'AdminController@logout');
 Route::get('/', 'AdminController@index');
-Route::any('{slug}', 'AdminController@index');
+Route::any('{slug}', 'AdminController@index')->where('slug', '([A-z\d-\/_.]+)?');
 
 
 // Route::get('/', function(){

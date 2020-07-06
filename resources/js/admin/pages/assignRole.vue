@@ -39,7 +39,7 @@
           </div>
         </div>
 
-       
+
       </div>
     </div>
   </div>
@@ -53,29 +53,31 @@ export default {
       data: {
         id: null
       },
-      isSending : false, 
-      
+      isSending : false,
+
      roles: [],
      resources: [
           {resourceName: 'Home', read: false, write: false, update: false, delete: false, name: '/'},
           {resourceName: 'Tags', read: false, write: false, update: false, delete: false, name: 'tags'},
           {resourceName: 'Category', read: false, write: false, update: false, delete: false, name: 'category'},
           {resourceName: 'Create blogs', read: false, write: false, update: false, delete: false, name: 'createBlog'},
+          {resourceName: 'Blogs', read: false, write: false, update: false, delete: false, name: 'blogs'},
           {resourceName: 'Admin users', read: false, write: false, update: false, delete: false, name: 'adminusers'},
           {resourceName: 'Role', read: false, write: false, update: false, delete: false, name: 'role'},
           {resourceName: 'Assign Role', read: false, write: false, update: false, delete: false, name: 'assignRole'},
-          
+
       ],
      defaultResourcesPermission: [
           {resourceName: 'Home', read: false, write: false, update: false, delete: false, name: '/'},
           {resourceName: 'Tags', read: false, write: false, update: false, delete: false, name: 'tags'},
           {resourceName: 'Category', read: false, write: false, update: false, delete: false, name: 'category'},
           {resourceName: 'Create blogs', read: false, write: false, update: false, delete: false, name: 'createBlog'},
+          {resourceName: 'Blogs', read: false, write: false, update: false, delete: false, name: 'blogs'},
 
           {resourceName: 'Admin users', read: false, write: false, update: false, delete: false, name: 'adminusers'},
           {resourceName: 'Role', read: false, write: false, update: false, delete: false, name: 'role'},
           {resourceName: 'Assign Role', read: false, write: false, update: false, delete: false, name: 'assignRole'},
-          
+
       ],
     };
   },
@@ -91,7 +93,7 @@ export default {
          }else{
            this.swr()
          }
-     }, 
+     },
      changeAdmin(){
        let index = this.roles.findIndex(role => role.id == this.data.id)
        let permission = this.roles[index].permission
@@ -100,11 +102,11 @@ export default {
        }else{
          this.resources = JSON.parse(permission)
        }
-       
+
      }
-     
-     
-    
+
+
+
   },
 
   async created() {
@@ -116,12 +118,13 @@ export default {
          this.data.id = res.data[0].id
          if(res.data[0].permission){
             this.resources = JSON.parse(res.data[0].permission)
+            //this.resources = this.defaultResourcesPermission
          }
       }
     } else {
       this.swr();
     }
   },
- 
+
 };
 </script>

@@ -1,19 +1,19 @@
 <template>
     <div>
         <!-- delete alert modal -->
-        <Modal 
+        <Modal
         :value="getDeleteModalObj.showDeleteModal"
         :mask-closable="false"
 		:closable="false"
-        
+
          width="360">
             <p slot="header" style="color:#f60;text-align:center">
                 <Icon type="ios-information-circle"></Icon>
-                <span>Delete confirmation</span>
+                <span>Delete confirmation!</span>
             </p>
             <div style="text-align:center">
-                <p>Are you sure you want to delete tag?.</p>
-                
+                <p>{{getDeleteModalObj.msg}}</p>
+
             </div>
             <div slot="footer">
                 <Button type="default" size="large" @click="closeModal" >Close</Button>
@@ -31,24 +31,24 @@ export default {
         return {
             isDeleing : false,
         }
-    }, 
+    },
     methods : {
         async deleteTag(){
             this.isDeleing = true
 			const res = await this.callApi('post', this.getDeleteModalObj.deleteUrl, this.getDeleteModalObj.data)
 			if(res.status===200){
-                this.s('Tag has been deleted successfully!')
+                this.s(this.getDeleteModalObj.successMsg)
                 this.$store.commit('setDeleteModal', true)
 			}else{
                 this.swr()
                 this.$store.commit('setDeleteModal', false)
             }
             this.isDeleing = false
-		}, 
+		},
         closeModal(){
             this.$store.commit('setDeleteModal', false)
         }
-    }, 
+    },
 
 
 

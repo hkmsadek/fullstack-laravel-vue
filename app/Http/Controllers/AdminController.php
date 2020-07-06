@@ -346,6 +346,58 @@ class AdminController extends Controller
         }
     }
 
+    // update blog
+    public function updateBlog(Request $request, $id)
+    {
+        $this->validate($request, [
+            'title' => 'required',
+            'post' => 'required',
+            'post_excerpt' => 'required',
+            'metaDescription' => 'required',
+            'jsonData' => 'required',
+            'category_id' => 'required',
+            'tag_id' => 'required',
+        ]);
+        $categories = $request->category_id;
+        $tags = $request->tag_id;
+        $blogCategories = [];
+        $blogTags = [];
+
+        DB::beginTransaction();
+        try {
+            $blog = Blog::where('id', $id)->update([
+                'title' => $request->title,
+                'slug' => $request->title,
+                'post' => $request->post,
+                'post_excerpt' => $request->post_excerpt,
+                'user_id' => Auth::user()->id,
+                'metaDescription' => $request->metaDescription,
+                'jsonData' => $request->jsonData,
+            ]);
+
+
+            // insert blog categories
+            foreach ($categories as $c) {
+                array_push($blogCategories, ['category_id' => $c, 'blog_id' => $id]);
+            }
+            // delete all previous categories
+            Blogcategory::where('blog_id', $id)->delete();
+            Blogcategory::insert($blogCategories);
+            // insert blog tags
+            foreach ($tags as $t) {
+                array_push($blogTags, ['tag_id' => $t, 'blog_id' => $id]);
+            }
+            Blogtag::where('blog_id', $id)->delete();
+            Blogtag::insert($blogTags);
+            DB::commit();
+            return 'done';
+        } catch (\Throwable $e) {
+
+            DB::rollback();
+            return 'not done';
+        }
+    }
+
     public function blogdata()
     {
         return Blog::with(['tag', 'cat'])->orderBy('id', 'desc')->get();
@@ -354,5 +406,9 @@ class AdminController extends Controller
     {
         return Blog::where('id', $request->id)->delete();
     }
+    public function singleBlogItem(Request $request, $id){
+        return Blog::with(['tag', 'cat'])->where('id', $id)->first();
+    }
+
 
 }
